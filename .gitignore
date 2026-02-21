@@ -1,0 +1,27 @@
+# Environments
+venv/
+env/
+.env
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Databases
+*.sqlite3
+*.db
+backend/blog.db
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Secret Admin Files
+local_admin_editor.html
