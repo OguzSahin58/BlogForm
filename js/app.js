@@ -1,4 +1,4 @@
-const API_URL = '/data/posts.json';
+const API_URL = 'data/posts.json';
 
 // Format date utility
 function formatDate(dateString) {
@@ -28,7 +28,7 @@ async function fetchPosts() {
         container.innerHTML = posts.map(post => `
             <article class="post-item">
                 <time class="post-date">${formatDate(post.created_at)}</time>
-                <a href="/post.html?slug=${post.url_slug}" class="post-item-link lightsaber-hover">${post.title}</a>
+                <a href="post.html?slug=${post.url_slug}" class="post-item-link lightsaber-hover">${post.title}</a>
             </article>
         `).join('');
     } catch (error) {
