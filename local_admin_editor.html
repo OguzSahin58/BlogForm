@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oguz Sahin | Editor</title>
+    <meta name="description" content="Write and Preview Blog Posts">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="frontend/css/style.css">
+    <!-- Marked.js for Markdown→HTML conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .editor-input {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .editor-input:focus {
+            border-color: var(--accent-saber);
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+        }
+
+        .editor-textarea {
+            height: 450px;
+            resize: vertical;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            tab-size: 4;
+        }
+
+        .editor-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            border: 1px solid var(--accent-saber);
+            padding: 0.75rem 1.5rem;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-saber);
+            color: var(--bg-color);
+            box-shadow: 0 0 12px var(--accent-saber-glow);
+        }
+
+        .preview-pane {
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            max-height: 700px;
+        }
+
+        .preview-header {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        /* ───── Formatting Toolbar ───── */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(0, 229, 255, 0.15);
+            border-color: var(--accent-saber);
+            color: var(--text-primary);
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 0.25rem;
+            align-self: stretch;
+        }
+
+        .editor-textarea-wrap .editor-textarea {
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* ───── Markdown Cheatsheet ───── */
+        .cheatsheet-toggle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            font-family: inherit;
+            margin-top: 0.25rem;
+        }
+
+        .cheatsheet-toggle:hover {
+            color: var(--accent-saber);
+        }
+
+        .cheatsheet {
+            display: none;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .cheatsheet code {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            color: var(--accent-saber);
+        }
+
+        /* ───── Content Mode Tabs ───── */
+        .mode-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .mode-tab {
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            font-family: inherit;
+            font-weight: 600;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.2s ease;
+        }
+
+        .mode-tab.active {
+            background: rgba(255, 255, 255, 0.04);
+            border-bottom-color: transparent;
+            color: var(--accent-saber);
+        }
+
+        .mode-tab:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* ───── Status Badges ───── */
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .status-success {
+            background: rgba(0, 229, 255, 0.12);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: var(--accent-saber);
+        }
+
+        .status-error {
+            background: rgba(255, 75, 75, 0.12);
+            border: 1px solid rgba(255, 75, 75, 0.3);
+            color: var(--accent-red);
+        }
+
+        .status-loading {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ───── Word Count ───── */
+        .word-count {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 0.25rem;
+            font-family: 'Consolas', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="starfield"></canvas>
+
+    <div class="layout" style="max-width: 1100px;"> <!-- Wider layout for editor -->
+        <header class="header">
+            <nav class="nav">
+                <a href="http://127.0.0.1:3000/" class="nav-brand"
+                    style="display: flex; align-items: center; gap: 8px;">
+                    <img src="frontend/darth-vader.svg" alt="Darth Vader Logo"
+                        style="width: 24px; height: 24px; object-fit: contain; filter: invert(1);">
+                    Oguz Sahin
+                </a>
+                <div class="nav-links">
+                    <a href="#" class="nav-link lightsaber-hover active">Admin Editor</a>
+                    <a href="http://127.0.0.1:3000/about.html" class="nav-link lightsaber-hover">About</a>
+                    <a href="http://127.0.0.1:3000/" class="nav-link lightsaber-hover">Posts</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <h1 class="page-title">Jedi Archives Terminal</h1>
+            <p class="page-subtitle">Write in Markdown — it auto-converts to HTML for you.</p>
+
+            <div id="status-message" style="margin-bottom: 1rem;"></div>
+
+            <!-- Pre-editor Auth Check -->
+            <div id="auth-container" class="editor-form"
+                style="max-width: 400px; margin: 0 auto; margin-top: 4rem; text-align: center;">
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">Enter Jedi Authorization Code to access
+                    the terminal.</p>
+                <input type="password" id="auth-code" class="editor-input" placeholder="Secret Code" required>
+                <button type="button" id="unlock-btn" class="btn" style="margin-top: 1rem;">Unlock Terminal</button>
+            </div>
+
+            <div class="editor-container" id="editor-layout" style="display: none;">
+                <!-- Editor Form -->
+                <form id="editor-form" class="editor-form">
+                    <div>
+                        <label for="post-title" class="editor-label">Title</label>
+                        <input type="text" id="post-title" class="editor-input"
+                            placeholder="An elegant weapon for a more civilized age" required>
+                    </div>
+
+                    <div>
+                        <label for="post-slug" class="editor-label">URL Slug (auto-generated from title)</label>
+                        <input type="text" id="post-slug" class="editor-input" placeholder="elegant-weapon" required>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="editor-label">Content</label>
+                            <div class="mode-tabs">
+                                <button type="button" class="mode-tab active" data-mode="markdown">Markdown</button>
+                                <button type="button" class="mode-tab" data-mode="html">Raw HTML</button>
+                            </div>
+                        </div>
+
+                        <!-- Formatting Toolbar -->
+                        <div class="editor-textarea-wrap">
+                            <div class="toolbar" id="markdown-toolbar">
+                                <button type="button" class="toolbar-btn" data-action="bold"
+                                    title="Bold"><b>B</b></button>
+                                <button type="button" class="toolbar-btn" data-action="italic"
+                                    title="Italic"><i>I</i></button>
+                                <button type="button" class="toolbar-btn" data-action="strikethrough"
+                                    title="Strikethrough"><s>S</s></button>
+                                <div class="toolbar-separator"></div>
+                                <button type="button" class="toolbar-btn" data-action="h2" title="Heading 2">H2</button>
+                                <button type="button" class="toolbar-btn" data-action="h3" title="Heading 3">H3</button>
+                                <div class="toolbar-separator"></div>
+                                <button type="button" class="toolbar-btn" data-action="ul" title="Bullet List">•
+                                    List</button>
+                                <button type="button" class="toolbar-btn" data-action="ol" title="Numbered List">1.
+                                    List</button>
+                                <button type="button" class="toolbar-btn" data-action="blockquote" title="Quote">"
+                                    Quote</button>
+                                <div class="toolbar-separator"></div>
+                                <button type="button" class="toolbar-btn" data-action="link" title="Link">🔗
+                                    Link</button>
+                                <button type="button" class="toolbar-btn" data-action="image" title="Image">🖼
+                                    Image</button>
+                                <button type="button" class="toolbar-btn" data-action="code"
+                                    title="Inline Code">&lt;/&gt;</button>
+                                <button type="button" class="toolbar-btn" data-action="codeblock"
+                                    title="Code Block">```</button>
+                                <div class="toolbar-separator"></div>
+                                <button type="button" class="toolbar-btn" data-action="hr"
+                                    title="Horizontal Rule">――</button>
+                            </div>
+                            <textarea id="post-content" class="editor-input editor-textarea" placeholder="Write using Markdown...
+
+# Heading 1
+## Heading 2
+
+**bold text** and *italic text*
+
+- Bullet point
+- Another point
+
+> A blockquote
+
+[Link text](https://example.com)
+
+`inline code`" required></textarea>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <button type="button" class="cheatsheet-toggle" id="cheatsheet-toggle">📖 Markdown
+                                Cheatsheet</button>
+                            <div class="word-count" id="word-count">0 words</div>
+                        </div>
+                        <div class="cheatsheet" id="cheatsheet">
+                            <code># Heading 1</code> &nbsp;→&nbsp; <b>Big heading</b><br>
+                            <code>## Heading 2</code> &nbsp;→&nbsp; <b>Sub heading</b><br>
+                            <code>**bold**</code> &nbsp;→&nbsp; <b>bold</b> &emsp;
+                            <code>*italic*</code> &nbsp;→&nbsp; <i>italic</i> &emsp;
+                            <code>~~strike~~</code> &nbsp;→&nbsp; <s>strike</s><br>
+                            <code>- item</code> &nbsp;→&nbsp; bullet list &emsp;
+                            <code>1. item</code> &nbsp;→&nbsp; numbered list<br>
+                            <code>> quote</code> &nbsp;→&nbsp; blockquote<br>
+                            <code>[text](url)</code> &nbsp;→&nbsp; link &emsp;
+                            <code>![alt](url)</code> &nbsp;→&nbsp; image<br>
+                            <code>`code`</code> &nbsp;→&nbsp; inline code &emsp;
+                            <code>```lang ... ```</code> &nbsp;→&nbsp; code block<br>
+                            <code>---</code> &nbsp;→&nbsp; horizontal rule
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">⚡ Publish Transmission</button>
+                </form>
+
+                <!-- Live Preview Pane -->
+                <div class="preview-pane post-article">
+                    <div class="preview-header">Live Preview</div>
+                    <h1 id="preview-title" class="post-title">An elegant weapon for a more civilized age</h1>
+                    <time id="preview-date" class="post-date">Just now</time>
+                    <div id="preview-body" class="post-body">
+                        <p>Write your transmission here...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2026 Oguz Sahin. May the Force be with you.</p>
+        </footer>
+    </div>
+
+    <!-- Re-use the existing app.js for the stars mostly, but add custom logic here -->
+    <script src="frontend/js/app.js"></script>
+    <script>
+        // ───── Auth Logic ─────
+        let secretCode = "";
+        const authContainer = document.getElementById('auth-container');
+        const editorLayout = document.getElementById('editor-layout');
+        const unlockBtn = document.getElementById('unlock-btn');
+        const authInput = document.getElementById('auth-code');
+
+        unlockBtn.addEventListener('click', () => {
+            if (authInput.value.trim().length > 0) {
+                secretCode = authInput.value.trim();
+                authContainer.style.display = 'none';
+                editorLayout.style.display = 'grid';
+            }
+        });
+        authInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') unlockBtn.click();
+        });
+
+        // ───── Element References ─────
+        const titleInput = document.getElementById('post-title');
+        const contentInput = document.getElementById('post-content');
+        const slugInput = document.getElementById('post-slug');
+        const previewTitle = document.getElementById('preview-title');
+        const previewBody = document.getElementById('preview-body');
+        const wordCountEl = document.getElementById('word-count');
+
+        // ───── Content Mode (Markdown vs Raw HTML) ─────
+        let contentMode = 'markdown';
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                contentMode = tab.dataset.mode;
+
+                const toolbar = document.getElementById('markdown-toolbar');
+                toolbar.style.display = contentMode === 'markdown' ? 'flex' : 'none';
+
+                contentInput.placeholder = contentMode === 'markdown'
+                    ? 'Write using Markdown...'
+                    : '<p>Write raw HTML here...</p>';
+
+                updatePreview();
+            });
+        });
+
+        // ───── Markdown Toolbar Actions ─────
+        document.querySelectorAll('.toolbar-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.dataset.action;
+                const textarea = contentInput;
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const selected = textarea.value.substring(start, end);
+                let insertion = '';
+                let cursorOffset = 0;
+
+                switch (action) {
+                    case 'bold':
+                        insertion = `**${selected || 'bold text'}**`;
+                        cursorOffset = selected ? insertion.length : 2;
+                        break;
+                    case 'italic':
+                        insertion = `*${selected || 'italic text'}*`;
+                        cursorOffset = selected ? insertion.length : 1;
+                        break;
+                    case 'strikethrough':
+                        insertion = `~~${selected || 'text'}~~`;
+                        cursorOffset = selected ? insertion.length : 2;
+                        break;
+                    case 'h2':
+                        insertion = `\n## ${selected || 'Heading'}`;
+                        cursorOffset = insertion.length;
+                        break;
+                    case 'h3':
+                        insertion = `\n### ${selected || 'Heading'}`;
+                        cursorOffset = insertion.length;
+                        break;
+                    case 'ul':
+                        insertion = `\n- ${selected || 'List item'}`;
+                        cursorOffset = insertion.length;
+                        break;
+                    case 'ol':
+                        insertion = `\n1. ${selected || 'List item'}`;
+                        cursorOffset = insertion.length;
+                        break;
+                    case 'blockquote':
+                        insertion = `\n> ${selected || 'Quote'}`;
+                        cursorOffset = insertion.length;
+                        break;
+                    case 'link':
+                        insertion = `[${selected || 'link text'}](https://)`;
+                        cursorOffset = selected ? insertion.length - 1 : 10;
+                        break;
+                    case 'image':
+                        insertion = `![${selected || 'alt text'}](https://)`;
+                        cursorOffset = selected ? insertion.length - 1 : 10;
+                        break;
+                    case 'code':
+                        insertion = `\`${selected || 'code'}\``;
+                        cursorOffset = selected ? insertion.length : 1;
+                        break;
+                    case 'codeblock':
+                        insertion = `\n\`\`\`\n${selected || 'code here'}\n\`\`\`\n`;
+                        cursorOffset = selected ? insertion.length : 5;
+                        break;
+                    case 'hr':
+                        insertion = `\n---\n`;
+                        cursorOffset = insertion.length;
+                        break;
+                }
+
+                // Insert at cursor position
+                textarea.value = textarea.value.substring(0, start) + insertion + textarea.value.substring(end);
+                textarea.focus();
+                const newPos = start + cursorOffset;
+                textarea.setSelectionRange(newPos, newPos);
+                updatePreview();
+                updateWordCount();
+            });
+        });
+
+        // ───── Cheatsheet Toggle ─────
+        document.getElementById('cheatsheet-toggle').addEventListener('click', () => {
+            const cs = document.getElementById('cheatsheet');
+            cs.style.display = cs.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // ───── Live Preview ─────
+        function updatePreview() {
+            const raw = contentInput.value;
+            if (!raw) {
+                previewBody.innerHTML = '<p style="color: var(--text-secondary);">Start writing to see a live preview...</p>';
+                return;
+            }
+            if (contentMode === 'markdown') {
+                previewBody.innerHTML = marked.parse(raw);
+            } else {
+                previewBody.innerHTML = raw;
+            }
+        }
+
+        function updateWordCount() {
+            const text = contentInput.value.trim();
+            const words = text.length === 0 ? 0 : text.split(/\s+/).length;
+            wordCountEl.textContent = `${words} word${words !== 1 ? 's' : ''}`;
+        }
+
+        // Auto-generate slug from title
+        titleInput.addEventListener('input', () => {
+            previewTitle.textContent = titleInput.value || 'Post Title';
+            if (!slugInput.dataset.manual) {
+                slugInput.value = titleInput.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            }
+        });
+
+        // Mark slug as manually edited if the user types in it
+        slugInput.addEventListener('input', () => {
+            slugInput.dataset.manual = slugInput.value ? 'true' : '';
+        });
+
+        // Live update content preview
+        contentInput.addEventListener('input', () => {
+            updatePreview();
+            updateWordCount();
+        });
+
+        // Tab key inserts spaces instead of changing focus
+        contentInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = contentInput.selectionStart;
+                const end = contentInput.selectionEnd;
+                contentInput.value = contentInput.value.substring(0, start) + '    ' + contentInput.value.substring(end);
+                contentInput.selectionStart = contentInput.selectionEnd = start + 4;
+                updatePreview();
+            }
+        });
+
+        // ───── Submit form to backend ─────
+        document.getElementById('editor-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.innerHTML = '<span class="status-badge status-loading">⏳ Publishing transmission...</span>';
+
+            // Convert markdown to HTML before sending
+            let finalContent = contentInput.value;
+            if (contentMode === 'markdown') {
+                finalContent = marked.parse(finalContent);
+            }
+
+            const postData = {
+                title: titleInput.value,
+                slug: slugInput.value,
+                content: finalContent
+            };
+
+            try {
+                // Post to the local manage_blog.py script
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Auth-Token': secretCode
+                    },
+                    body: JSON.stringify(postData),
+                });
+
+                if (response.ok) {
+                    statusDiv.innerHTML = '<span class="status-badge status-success">✅ Transmission published to posts.json! You can now commit and push to GitHub.</span>';
+                    // Clear form
+                    titleInput.value = '';
+                    slugInput.value = '';
+                    slugInput.dataset.manual = '';
+                    contentInput.value = '';
+                    previewTitle.textContent = 'Post Title';
+                    previewBody.innerHTML = '<p style="color: var(--text-secondary);">Start writing to see a live preview...</p>';
+                    updateWordCount();
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    statusDiv.innerHTML = `<span class="status-badge status-error">❌ Failed: ${errorData.detail || 'Check if a post with this slug already exists.'}</span>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<span class="status-badge status-error">❌ Could not connect. Make sure you are running `python manage_blog.py`.</span>';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,18 +1,18 @@
 @echo off
-echo  Starting Backend API...
-cd backend
-if not exist "venv" (
-    python -m venv venv
+echo =========================================
+echo Starting Jedi Archives (Local Admin Mode)
+echo =========================================
+
+REM Check if Python is installed
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Python is not installed or not in PATH.
+    echo Please install Python 3.8+ to use the local editor.
+    pause
+    exit /b
 )
-call venv\Scripts\activate.bat
-pip install -r requirements.txt
-python seed.py
-start /B uvicorn main:app --reload --port 8000
-echo  Backend running at http://localhost:8000
-cd ..
-echo  Starting Frontend...
-cd frontend
-start /B python -m http.server 3000
-echo  Frontend running at http://localhost:3000
-echo  Servers are running in the background. Close this window or use Task Manager to stop them.
+
+echo Starting the local management server...
+python manage_blog.py
+
 pause

@@ -23,5 +23,3 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Secret Admin Files
-local_admin_editor.html

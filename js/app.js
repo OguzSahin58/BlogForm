@@ -1,4 +1,4 @@
-const API_URL = 'http://127.0.0.1:8000/api/posts';
+const API_URL = '/data/posts.json';
 
 // Format date utility
 function formatDate(dateString) {
@@ -15,7 +15,10 @@ async function fetchPosts() {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error('Failed to fetch posts');
 
-        const posts = await response.json();
+        let posts = [];
+        try {
+            posts = await response.json();
+        } catch (e) { /* Empty JSON */ }
 
         if (posts.length === 0) {
             container.innerHTML = '<p class="text-secondary">No recorded transmissions found in the archives.</p>';
@@ -25,12 +28,12 @@ async function fetchPosts() {
         container.innerHTML = posts.map(post => `
             <article class="post-item">
                 <time class="post-date">${formatDate(post.created_at)}</time>
-                <a href="/post.html?slug=${post.slug}" class="post-item-link lightsaber-hover">${post.title}</a>
+                <a href="/post.html?slug=${post.url_slug}" class="post-item-link lightsaber-hover">${post.title}</a>
             </article>
         `).join('');
     } catch (error) {
         console.error('Error fetching posts:', error);
-        container.innerHTML = '<p style="color: var(--accent-red);">Error connecting to the Jedi Holocron... Ensure backend is running.</p>';
+        container.innerHTML = '<p style="color: var(--accent-red);">Error connecting to the Jedi Holocron... Ensure manage_blog.py is running or static files are deployed.</p>';
     }
 }
 
@@ -40,17 +43,16 @@ async function fetchPost(slug) {
     if (!container) return;
 
     try {
-        const response = await fetch(`${API_URL}/${slug}`);
-        if (!response.ok) {
-            if (response.status === 404) {
-                container.innerHTML = '<h2>Transmission Not Found (404)</h2><p>This record has been deleted from the archives.</p>';
-            } else {
-                throw new Error('Failed to fetch post');
-            }
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Failed to fetch posts data');
+
+        const posts = await response.json();
+        const post = posts.find(p => p.url_slug === slug);
+
+        if (!post) {
+            container.innerHTML = '<h2>Transmission Not Found (404)</h2><p>This record has been deleted from the archives.</p>';
             return;
         }
-
-        const post = await response.json();
 
         container.innerHTML = `
             <h1 class="post-title">${post.title}</h1>
@@ -59,9 +61,10 @@ async function fetchPost(slug) {
                 ${post.content}
             </div>
         `;
+        document.title = `Oguz Sahin | ${post.title}`;
     } catch (error) {
         console.error('Error fetching post:', error);
-        container.innerHTML = '<p style="color: var(--accent-red);">Error decoding the transmission... Ensure backend is running.</p>';
+        container.innerHTML = '<p style="color: var(--accent-red);">Error decoding the transmission... Ensure manage_blog.py is running or static files are deployed.</p>';
     }
 }
 
