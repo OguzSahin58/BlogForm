@@ -12,7 +12,7 @@ async function fetchPosts() {
     if (!container) return;
 
     try {
-        const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
+        const response = await fetch(API_URL);
         if (!response.ok) throw new Error('Failed to fetch posts');
 
         let posts = [];
@@ -43,7 +43,7 @@ async function fetchPost(slug) {
     if (!container) return;
 
     try {
-        const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
+        const response = await fetch(API_URL);
         if (!response.ok) throw new Error('Failed to fetch posts data');
 
         const posts = await response.json();
@@ -79,7 +79,7 @@ async function fetchAbout() {
     if (!container) return;
 
     try {
-        const response = await fetch(`data/about.json?t=${new Date().getTime()}`);
+        const response = await fetch('data/about.json');
         if (!response.ok) throw new Error('Failed to fetch about data');
 
         const data = await response.json();
