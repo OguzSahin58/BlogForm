@@ -12,7 +12,7 @@ async function fetchPosts() {
     if (!container) return;
 
     try {
-        const response = await fetch(API_URL);
+        const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
         if (!response.ok) throw new Error('Failed to fetch posts');
 
         let posts = [];
@@ -43,7 +43,7 @@ async function fetchPost(slug) {
     if (!container) return;
 
     try {
-        const response = await fetch(API_URL);
+        const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
         if (!response.ok) throw new Error('Failed to fetch posts data');
 
         const posts = await response.json();
@@ -71,6 +71,33 @@ async function fetchPost(slug) {
 // Initialize home page
 if (document.getElementById('posts-container')) {
     document.addEventListener('DOMContentLoaded', fetchPosts);
+}
+
+// Fetch About page content
+async function fetchAbout() {
+    const container = document.getElementById('about-content-container');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`data/about.json?t=${new Date().getTime()}`);
+        if (!response.ok) throw new Error('Failed to fetch about data');
+
+        const data = await response.json();
+
+        if (data && data.markdown) {
+            container.innerHTML = marked.parse(data.markdown);
+        } else {
+            container.innerHTML = '<p class="text-secondary">Biography is currently empty.</p>';
+        }
+    } catch (error) {
+        console.error('Error fetching about:', error);
+        container.innerHTML = '<p style="color: var(--text-secondary);">The Jedi Archives have no record of this entity.</p>';
+    }
+}
+
+// Initialize About page
+if (document.getElementById('about-content-container')) {
+    document.addEventListener('DOMContentLoaded', fetchAbout);
 }
 
 // --- Starfield Canvas Logic ---

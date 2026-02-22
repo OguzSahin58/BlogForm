@@ -4,247 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oguz Sahin | Editor</title>
-    <meta name="description" content="Write and Preview Blog Posts">
+    <title>Oguz Sahin | Admin Panel</title>
+    <meta name="description" content="Manage your Blog">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="frontend/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <!-- Marked.js for Markdown→HTML conversion -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        .editor-container {
+        /* ───── Dashboard Container ───── */
+        .dashboard-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 1rem;
+            grid-template-columns: 240px 1fr;
+            min-height: calc(100vh - 80px);
+            /* Minus header */
+            background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(20, 20, 25, 0.95) 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        @media (max-width: 768px) {
-            .editor-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .editor-form {
+        /* ───── Sidebar ───── */
+        .sidebar {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 2rem 1rem;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.5rem;
         }
 
-        .editor-input {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 1rem;
-            border-radius: 4px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        .editor-input:focus {
-            border-color: var(--accent-saber);
-            box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
-        }
-
-        .editor-textarea {
-            height: 450px;
-            resize: vertical;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            tab-size: 4;
-        }
-
-        .editor-label {
+        .sidebar-item {
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
             font-weight: 500;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .btn {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            border: 1px solid var(--accent-saber);
-            padding: 0.75rem 1.5rem;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: var(--accent-saber);
-            color: var(--bg-color);
-            box-shadow: 0 0 12px var(--accent-saber-glow);
-        }
-
-        .preview-pane {
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            padding: 1.5rem;
-            border-radius: 4px;
-            background-color: rgba(0, 0, 0, 0.2);
-            overflow-y: auto;
-            max-height: 700px;
-        }
-
-        .preview-header {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 0.5rem;
-        }
-
-        /* ───── Formatting Toolbar ───── */
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.25rem;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-bottom: none;
-            border-radius: 4px 4px 0 0;
-        }
-
-        .toolbar-btn {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-secondary);
-            padding: 0.3rem 0.6rem;
-            font-size: 0.8rem;
-            font-family: 'Consolas', 'Monaco', monospace;
-            cursor: pointer;
-            border-radius: 3px;
             transition: all 0.2s ease;
-            line-height: 1;
-        }
-
-        .toolbar-btn:hover {
-            background: rgba(0, 229, 255, 0.15);
-            border-color: var(--accent-saber);
-            color: var(--text-primary);
-        }
-
-        .toolbar-separator {
-            width: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 0 0.25rem;
-            align-self: stretch;
-        }
-
-        .editor-textarea-wrap .editor-textarea {
-            border-radius: 0 0 4px 4px;
-        }
-
-        /* ───── Markdown Cheatsheet ───── */
-        .cheatsheet-toggle {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
             cursor: pointer;
-            text-decoration: underline;
-            background: none;
-            border: none;
-            font-family: inherit;
-            margin-top: 0.25rem;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .cheatsheet-toggle:hover {
-            color: var(--accent-saber);
-        }
-
-        .cheatsheet {
-            display: none;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin-top: 0.5rem;
-            padding: 0.75rem;
+        .sidebar-item:hover {
+            color: var(--text-primary);
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+            border-color: rgba(255, 255, 255, 0.05);
         }
 
-        .cheatsheet code {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 0.15rem 0.4rem;
-            border-radius: 3px;
-            font-family: 'Consolas', monospace;
+        .sidebar-item.active {
             color: var(--accent-saber);
+            background: rgba(0, 229, 255, 0.08);
+            border-color: rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.05);
         }
 
-        /* ───── Content Mode Tabs ───── */
-        .mode-tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: -1px;
-            position: relative;
-            z-index: 2;
+        /* ───── Main Content Area ───── */
+        .dashboard-content {
+            padding: 2rem 3rem;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
         }
 
-        .mode-tab {
-            padding: 0.4rem 1rem;
-            font-size: 0.8rem;
-            font-family: inherit;
-            font-weight: 600;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-radius: 4px 4px 0 0;
-            transition: all 0.2s ease;
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
         }
 
-        .mode-tab.active {
-            background: rgba(255, 255, 255, 0.04);
-            border-bottom-color: transparent;
-            color: var(--accent-saber);
+        .tab-content.active {
+            display: block;
         }
 
-        .mode-tab:hover:not(.active) {
-            color: var(--text-primary);
-        }
-
-        /* ───── Status Badges ───── */
-        .status-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            animation: fadeInUp 0.3s ease;
-        }
-
-        .status-success {
-            background: rgba(0, 229, 255, 0.12);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            color: var(--accent-saber);
-        }
-
-        .status-error {
-            background: rgba(255, 75, 75, 0.12);
-            border: 1px solid rgba(255, 75, 75, 0.3);
-            color: var(--accent-red);
-        }
-
-        .status-loading {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-secondary);
-        }
-
-        @keyframes fadeInUp {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(6px);
+                transform: translateY(5px);
             }
 
             to {
@@ -253,316 +88,516 @@
             }
         }
 
-        /* ───── Word Count ───── */
-        .word-count {
-            font-size: 0.7rem;
+        /* ───── Forms & Inputs ───── */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
             color: var(--text-secondary);
-            text-align: right;
-            margin-top: 0.25rem;
-            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            border-radius: 6px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .admin-input:focus {
+            border-color: var(--accent-saber);
+            box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.15);
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* ───── Editor Split Pane ───── */
+        .editor-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .editor-split {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-container {
+                grid-template-columns: 200px 1fr;
+            }
+
+            .dashboard-content {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 1rem;
+            }
+        }
+
+        .editor-textarea {
+            height: 500px;
+            resize: vertical;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            background-color: rgba(10, 10, 15, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0 0 6px 6px;
+            padding: 1rem;
+            color: #d4d4d4;
+        }
+
+        .preview-pane {
+            height: 500px;
+            /* Match height of textarea */
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            padding: 1.5rem 2rem;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            word-wrap: break-word;
+            /* Ensure long words don't overflow */
+        }
+
+        .preview-header {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* ───── Toolbar ───── */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            align-items: center;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 0.25rem;
+        }
+
+        /* ───── Buttons ───── */
+        .btn {
+            background-color: transparent;
+            color: var(--accent-saber);
+            border: 1px solid var(--accent-saber);
+            padding: 0.8rem 1.5rem;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-saber);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn-danger {
+            color: var(--accent-red);
+            border-color: var(--accent-red);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--accent-red);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 75, 75, 0.4);
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ───── Auth Screen ───── */
+        #auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-box {
+            background: rgba(20, 20, 25, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ───── Manage Posts List ───── */
+        .post-manage-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .post-manage-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .post-manage-item:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .post-manage-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .post-manage-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ───── Status Alerts ───── */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid var(--accent-saber);
+            color: var(--accent-saber);
+        }
+
+        .alert-error {
+            background: rgba(255, 75, 75, 0.1);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
         }
     </style>
 </head>
 
 <body>
-    <canvas id="starfield"></canvas>
+    <canvas id="starfield"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
 
-    <div class="layout" style="max-width: 1100px;"> <!-- Wider layout for editor -->
-        <header class="header">
-            <nav class="nav">
-                <a href="http://127.0.0.1:3000/" class="nav-brand"
-                    style="display: flex; align-items: center; gap: 8px;">
-                    <img src="frontend/darth-vader.svg" alt="Darth Vader Logo"
-                        style="width: 24px; height: 24px; object-fit: contain; filter: invert(1);">
-                    Oguz Sahin
-                </a>
-                <div class="nav-links">
-                    <a href="#" class="nav-link lightsaber-hover active">Admin Editor</a>
-                    <a href="http://127.0.0.1:3000/about.html" class="nav-link lightsaber-hover">About</a>
-                    <a href="http://127.0.0.1:3000/" class="nav-link lightsaber-hover">Posts</a>
-                </div>
-            </nav>
-        </header>
-
-        <main class="main-content">
-            <h1 class="page-title">Jedi Archives Terminal</h1>
-            <p class="page-subtitle">Write in Markdown — it auto-converts to HTML for you.</p>
-
-            <div id="status-message" style="margin-bottom: 1rem;"></div>
-
-            <!-- Pre-editor Auth Check -->
-            <div id="auth-container" class="editor-form"
-                style="max-width: 400px; margin: 0 auto; margin-top: 4rem; text-align: center;">
-                <p style="margin-bottom: 1rem; color: var(--text-secondary);">Enter Jedi Authorization Code to access
-                    the terminal.</p>
-                <input type="password" id="auth-code" class="editor-input" placeholder="Secret Code" required>
-                <button type="button" id="unlock-btn" class="btn" style="margin-top: 1rem;">Unlock Terminal</button>
-            </div>
-
-            <div class="editor-container" id="editor-layout" style="display: none;">
-                <!-- Editor Form -->
-                <form id="editor-form" class="editor-form">
-                    <div>
-                        <label for="post-title" class="editor-label">Title</label>
-                        <input type="text" id="post-title" class="editor-input"
-                            placeholder="An elegant weapon for a more civilized age" required>
-                    </div>
-
-                    <div>
-                        <label for="post-slug" class="editor-label">URL Slug (auto-generated from title)</label>
-                        <input type="text" id="post-slug" class="editor-input" placeholder="elegant-weapon" required>
-                    </div>
-
-                    <div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <label class="editor-label">Content</label>
-                            <div class="mode-tabs">
-                                <button type="button" class="mode-tab active" data-mode="markdown">Markdown</button>
-                                <button type="button" class="mode-tab" data-mode="html">Raw HTML</button>
-                            </div>
-                        </div>
-
-                        <!-- Formatting Toolbar -->
-                        <div class="editor-textarea-wrap">
-                            <div class="toolbar" id="markdown-toolbar">
-                                <button type="button" class="toolbar-btn" data-action="bold"
-                                    title="Bold"><b>B</b></button>
-                                <button type="button" class="toolbar-btn" data-action="italic"
-                                    title="Italic"><i>I</i></button>
-                                <button type="button" class="toolbar-btn" data-action="strikethrough"
-                                    title="Strikethrough"><s>S</s></button>
-                                <div class="toolbar-separator"></div>
-                                <button type="button" class="toolbar-btn" data-action="h2" title="Heading 2">H2</button>
-                                <button type="button" class="toolbar-btn" data-action="h3" title="Heading 3">H3</button>
-                                <div class="toolbar-separator"></div>
-                                <button type="button" class="toolbar-btn" data-action="ul" title="Bullet List">•
-                                    List</button>
-                                <button type="button" class="toolbar-btn" data-action="ol" title="Numbered List">1.
-                                    List</button>
-                                <button type="button" class="toolbar-btn" data-action="blockquote" title="Quote">"
-                                    Quote</button>
-                                <div class="toolbar-separator"></div>
-                                <button type="button" class="toolbar-btn" data-action="link" title="Link">🔗
-                                    Link</button>
-                                <button type="button" class="toolbar-btn" data-action="image" title="Image">🖼
-                                    Image</button>
-                                <button type="button" class="toolbar-btn" data-action="code"
-                                    title="Inline Code">&lt;/&gt;</button>
-                                <button type="button" class="toolbar-btn" data-action="codeblock"
-                                    title="Code Block">```</button>
-                                <div class="toolbar-separator"></div>
-                                <button type="button" class="toolbar-btn" data-action="hr"
-                                    title="Horizontal Rule">――</button>
-                            </div>
-                            <textarea id="post-content" class="editor-input editor-textarea" placeholder="Write using Markdown...
-
-# Heading 1
-## Heading 2
-
-**bold text** and *italic text*
-
-- Bullet point
-- Another point
-
-> A blockquote
-
-[Link text](https://example.com)
-
-`inline code`" required></textarea>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <button type="button" class="cheatsheet-toggle" id="cheatsheet-toggle">📖 Markdown
-                                Cheatsheet</button>
-                            <div class="word-count" id="word-count">0 words</div>
-                        </div>
-                        <div class="cheatsheet" id="cheatsheet">
-                            <code># Heading 1</code> &nbsp;→&nbsp; <b>Big heading</b><br>
-                            <code>## Heading 2</code> &nbsp;→&nbsp; <b>Sub heading</b><br>
-                            <code>**bold**</code> &nbsp;→&nbsp; <b>bold</b> &emsp;
-                            <code>*italic*</code> &nbsp;→&nbsp; <i>italic</i> &emsp;
-                            <code>~~strike~~</code> &nbsp;→&nbsp; <s>strike</s><br>
-                            <code>- item</code> &nbsp;→&nbsp; bullet list &emsp;
-                            <code>1. item</code> &nbsp;→&nbsp; numbered list<br>
-                            <code>> quote</code> &nbsp;→&nbsp; blockquote<br>
-                            <code>[text](url)</code> &nbsp;→&nbsp; link &emsp;
-                            <code>![alt](url)</code> &nbsp;→&nbsp; image<br>
-                            <code>`code`</code> &nbsp;→&nbsp; inline code &emsp;
-                            <code>```lang ... ```</code> &nbsp;→&nbsp; code block<br>
-                            <code>---</code> &nbsp;→&nbsp; horizontal rule
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn">⚡ Publish Transmission</button>
-                </form>
-
-                <!-- Live Preview Pane -->
-                <div class="preview-pane post-article">
-                    <div class="preview-header">Live Preview</div>
-                    <h1 id="preview-title" class="post-title">An elegant weapon for a more civilized age</h1>
-                    <time id="preview-date" class="post-date">Just now</time>
-                    <div id="preview-body" class="post-body">
-                        <p>Write your transmission here...</p>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <footer class="footer">
-            <p>© 2026 Oguz Sahin. May the Force be with you.</p>
-        </footer>
+    <!-- Auth Overlay -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h2 style="margin-bottom: 0.5rem; color: var(--text-primary);">Restricted Area</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-secondary);">Enter Jedi authorization code to access the
+                terminal.</p>
+            <input type="password" id="auth-code" class="admin-input" placeholder="Secret Code"
+                style="margin-bottom: 1rem; text-align: center;">
+            <button type="button" id="unlock-btn" class="btn" style="width: 100%; justify-content: center;">Access
+                Terminal</button>
+        </div>
     </div>
 
-    <!-- Re-use the existing app.js for the stars mostly, but add custom logic here -->
-    <script src="frontend/js/app.js"></script>
-    <script>
-        // ───── Auth Logic ─────
-        let secretCode = "";
-        const authContainer = document.getElementById('auth-container');
-        const editorLayout = document.getElementById('editor-layout');
-        const unlockBtn = document.getElementById('unlock-btn');
-        const authInput = document.getElementById('auth-code');
+    <!-- Header -->
+    <header class="header"
+        style="background: rgba(0,0,0,0.8); border-bottom: 1px solid rgba(255,255,255,0.05); height: 80px; position: relative; z-index: 10;">
+        <nav class="nav">
+            <a href="index.html" class="nav-brand" style="display: flex; align-items: center; gap: 8px;">
+                <img src="darth-vader.svg" alt="Darth Vader Logo"
+                    style="width: 24px; height: 24px; object-fit: contain; filter: invert(1);">
+                Oguz Sahin | CMS
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link lightsaber-hover target-blank">View Live Site ↗</a>
+            </div>
+        </nav>
+    </header>
 
-        unlockBtn.addEventListener('click', () => {
-            if (authInput.value.trim().length > 0) {
-                secretCode = authInput.value.trim();
-                authContainer.style.display = 'none';
-                editorLayout.style.display = 'grid';
+    <!-- Main Dashboard -->
+    <div class="dashboard-container" style="display: none;" id="dashboard-main">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <a href="#" class="sidebar-item active" data-target="tab-write">
+                ✏️ Write Post
+            </a>
+            <a href="#" class="sidebar-item" data-target="tab-manage">
+                📋 Manage Posts
+            </a>
+            <a href="#" class="sidebar-item" data-target="tab-about">
+                👤 Edit About
+            </a>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="dashboard-content">
+            <!-- Alert Box -->
+            <div id="global-alert" class="alert"></div>
+
+            <!-- TAB: Write Post -->
+            <section id="tab-write" class="tab-content active">
+                <div class="flex-between" style="margin-bottom: 2rem;">
+                    <div>
+                        <h1 class="page-title" style="margin-bottom: 0.25rem;">New Transmission</h1>
+                        <p class="page-subtitle">Publish a new article to your blog.</p>
+                    </div>
+                </div>
+
+                <form id="write-form">
+                    <div class="form-group">
+                        <label class="admin-label">Title</label>
+                        <input type="text" id="post-title" class="admin-input"
+                            placeholder="An elegant weapon for a more civilized age..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="admin-label">URL Slug</label>
+                        <input type="text" id="post-slug" class="admin-input" placeholder="elegant-weapon" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="admin-label">Content (Markdown)</label>
+                        <div class="editor-split">
+                            <!-- Editor Side -->
+                            <div>
+                                <div class="toolbar" id="toolbar-write">
+                                    <button type="button" class="toolbar-btn" data-action="bold"><b>B</b></button>
+                                    <button type="button" class="toolbar-btn" data-action="italic"><i>I</i></button>
+                                    <div class="toolbar-separator"></div>
+                                    <button type="button" class="toolbar-btn" data-action="h2">H2</button>
+                                    <button type="button" class="toolbar-btn" data-action="h3">H3</button>
+                                    <div class="toolbar-separator"></div>
+                                    <button type="button" class="toolbar-btn" data-action="ul">• List</button>
+                                    <button type="button" class="toolbar-btn" data-action="ol">1. List</button>
+                                    <button type="button" class="toolbar-btn" data-action="blockquote">" Quote</button>
+                                    <div class="toolbar-separator"></div>
+                                    <button type="button" class="toolbar-btn" data-action="link">🔗 Link</button>
+                                    <button type="button" class="toolbar-btn" data-action="image">🖼 Image</button>
+                                    <button type="button" class="toolbar-btn" data-action="code">&lt;/&gt;</button>
+                                </div>
+                                <textarea id="post-content" class="admin-input editor-textarea"
+                                    placeholder="Write using Markdown..." required></textarea>
+                            </div>
+
+                            <!-- Preview Side -->
+                            <div>
+                                <div class="preview-pane post-article">
+                                    <div class="preview-header">
+                                        <span>Live Preview</span>
+                                        <span id="word-count" style="font-family: monospace;">0 words</span>
+                                    </div>
+                                    <h1 id="preview-title" class="post-title" style="margin-top:0;">Post Title</h1>
+                                    <time class="post-date">Just now</time>
+                                    <div id="preview-body" class="post-body" style="margin-top: 1rem;">
+                                        <p style="color: var(--text-secondary);">Start writing to see preview...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="btn" id="btn-publish-post">⚡ Publish Transmission</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- TAB: Manage Posts -->
+            <section id="tab-manage" class="tab-content">
+                <div class="flex-between" style="margin-bottom: 2rem;">
+                    <div>
+                        <h1 class="page-title" style="margin-bottom: 0.25rem;">Manage Archive</h1>
+                        <p class="page-subtitle">View and delete existing posts.</p>
+                    </div>
+                    <button type="button" class="btn btn-small" id="btn-refresh-posts">🔄 Refresh</button>
+                </div>
+
+                <div id="manage-posts-container" class="post-manage-list">
+                    <div style="color: var(--text-secondary);">Loading archives...</div>
+                </div>
+            </section>
+
+            <!-- TAB: Edit About -->
+            <section id="tab-about" class="tab-content">
+                <div class="flex-between" style="margin-bottom: 2rem;">
+                    <div>
+                        <h1 class="page-title" style="margin-bottom: 0.25rem;">Edit About Section</h1>
+                        <p class="page-subtitle">Update your personal biography.</p>
+                    </div>
+                </div>
+
+                <form id="about-form">
+                    <div class="form-group">
+                        <label class="admin-label">Biography Content (Markdown)</label>
+                        <div class="editor-split">
+                            <!-- Editor Side -->
+                            <div>
+                                <div class="toolbar" id="toolbar-about">
+                                    <button type="button" class="toolbar-btn" data-action="bold"><b>B</b></button>
+                                    <button type="button" class="toolbar-btn" data-action="italic"><i>I</i></button>
+                                    <div class="toolbar-separator"></div>
+                                    <button type="button" class="toolbar-btn" data-action="h2">H2</button>
+                                    <button type="button" class="toolbar-btn" data-action="h3">H3</button>
+                                    <div class="toolbar-separator"></div>
+                                    <button type="button" class="toolbar-btn" data-action="ul">• List</button>
+                                    <button type="button" class="toolbar-btn" data-action="link">🔗 Link</button>
+                                </div>
+                                <textarea id="about-content" class="admin-input editor-textarea"
+                                    placeholder="Write your about section..." required></textarea>
+                            </div>
+
+                            <!-- Preview Side -->
+                            <div>
+                                <div class="preview-pane post-article">
+                                    <div class="preview-header">
+                                        <span>Live Preview</span>
+                                    </div>
+                                    <div id="about-preview-body" class="post-body" style="margin-top: 1rem;">
+                                        <p style="color: var(--text-secondary);">Loading current about text...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="btn" id="btn-save-about">💾 Save Biography</button>
+                    </div>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script>
+        // ───── State & Elements ─────
+        let secretCode = "";
+        const alertBox = document.getElementById('global-alert');
+
+        // ───── Authentication ─────
+        document.getElementById('unlock-btn').addEventListener('click', () => {
+            const code = document.getElementById('auth-code').value.trim();
+            if (code) {
+                secretCode = code;
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('dashboard-main').style.display = 'grid';
+                loadManagePosts(); // Load posts immediately when unlocked
+                loadAboutContent(); // Load about content immediately
             }
         });
-        authInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') unlockBtn.click();
+        document.getElementById('auth-code').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('unlock-btn').click();
         });
 
-        // ───── Element References ─────
+        // ───── Utilities ─────
+        function showAlert(msg, isError = false) {
+            alertBox.textContent = msg;
+            alertBox.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+        }
+
+        // ───── Tab Navigation ─────
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Update active state in sidebar
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                // Show correct content tab
+                const targetId = item.dataset.target;
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
+        // ───── Write Post Logic ─────
         const titleInput = document.getElementById('post-title');
-        const contentInput = document.getElementById('post-content');
         const slugInput = document.getElementById('post-slug');
+        const contentInput = document.getElementById('post-content');
         const previewTitle = document.getElementById('preview-title');
         const previewBody = document.getElementById('preview-body');
         const wordCountEl = document.getElementById('word-count');
 
-        // ───── Content Mode (Markdown vs Raw HTML) ─────
-        let contentMode = 'markdown';
-        document.querySelectorAll('.mode-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                contentMode = tab.dataset.mode;
-
-                const toolbar = document.getElementById('markdown-toolbar');
-                toolbar.style.display = contentMode === 'markdown' ? 'flex' : 'none';
-
-                contentInput.placeholder = contentMode === 'markdown'
-                    ? 'Write using Markdown...'
-                    : '<p>Write raw HTML here...</p>';
-
-                updatePreview();
-            });
-        });
-
-        // ───── Markdown Toolbar Actions ─────
-        document.querySelectorAll('.toolbar-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const action = btn.dataset.action;
-                const textarea = contentInput;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const selected = textarea.value.substring(start, end);
-                let insertion = '';
-                let cursorOffset = 0;
-
-                switch (action) {
-                    case 'bold':
-                        insertion = `**${selected || 'bold text'}**`;
-                        cursorOffset = selected ? insertion.length : 2;
-                        break;
-                    case 'italic':
-                        insertion = `*${selected || 'italic text'}*`;
-                        cursorOffset = selected ? insertion.length : 1;
-                        break;
-                    case 'strikethrough':
-                        insertion = `~~${selected || 'text'}~~`;
-                        cursorOffset = selected ? insertion.length : 2;
-                        break;
-                    case 'h2':
-                        insertion = `\n## ${selected || 'Heading'}`;
-                        cursorOffset = insertion.length;
-                        break;
-                    case 'h3':
-                        insertion = `\n### ${selected || 'Heading'}`;
-                        cursorOffset = insertion.length;
-                        break;
-                    case 'ul':
-                        insertion = `\n- ${selected || 'List item'}`;
-                        cursorOffset = insertion.length;
-                        break;
-                    case 'ol':
-                        insertion = `\n1. ${selected || 'List item'}`;
-                        cursorOffset = insertion.length;
-                        break;
-                    case 'blockquote':
-                        insertion = `\n> ${selected || 'Quote'}`;
-                        cursorOffset = insertion.length;
-                        break;
-                    case 'link':
-                        insertion = `[${selected || 'link text'}](https://)`;
-                        cursorOffset = selected ? insertion.length - 1 : 10;
-                        break;
-                    case 'image':
-                        insertion = `![${selected || 'alt text'}](https://)`;
-                        cursorOffset = selected ? insertion.length - 1 : 10;
-                        break;
-                    case 'code':
-                        insertion = `\`${selected || 'code'}\``;
-                        cursorOffset = selected ? insertion.length : 1;
-                        break;
-                    case 'codeblock':
-                        insertion = `\n\`\`\`\n${selected || 'code here'}\n\`\`\`\n`;
-                        cursorOffset = selected ? insertion.length : 5;
-                        break;
-                    case 'hr':
-                        insertion = `\n---\n`;
-                        cursorOffset = insertion.length;
-                        break;
-                }
-
-                // Insert at cursor position
-                textarea.value = textarea.value.substring(0, start) + insertion + textarea.value.substring(end);
-                textarea.focus();
-                const newPos = start + cursorOffset;
-                textarea.setSelectionRange(newPos, newPos);
-                updatePreview();
-                updateWordCount();
-            });
-        });
-
-        // ───── Cheatsheet Toggle ─────
-        document.getElementById('cheatsheet-toggle').addEventListener('click', () => {
-            const cs = document.getElementById('cheatsheet');
-            cs.style.display = cs.style.display === 'block' ? 'none' : 'block';
-        });
-
-        // ───── Live Preview ─────
-        function updatePreview() {
-            const raw = contentInput.value;
-            if (!raw) {
-                previewBody.innerHTML = '<p style="color: var(--text-secondary);">Start writing to see a live preview...</p>';
-                return;
-            }
-            if (contentMode === 'markdown') {
-                previewBody.innerHTML = marked.parse(raw);
-            } else {
-                previewBody.innerHTML = raw;
-            }
-        }
-
-        function updateWordCount() {
-            const text = contentInput.value.trim();
-            const words = text.length === 0 ? 0 : text.split(/\s+/).length;
-            wordCountEl.textContent = `${words} word${words !== 1 ? 's' : ''}`;
-        }
-
-        // Auto-generate slug from title
         titleInput.addEventListener('input', () => {
             previewTitle.textContent = titleInput.value || 'Post Title';
             if (!slugInput.dataset.manual) {
@@ -570,76 +605,196 @@
             }
         });
 
-        // Mark slug as manually edited if the user types in it
-        slugInput.addEventListener('input', () => {
-            slugInput.dataset.manual = slugInput.value ? 'true' : '';
-        });
+        slugInput.addEventListener('input', () => { slugInput.dataset.manual = 'true'; });
 
-        // Live update content preview
         contentInput.addEventListener('input', () => {
-            updatePreview();
-            updateWordCount();
+            const text = contentInput.value;
+            previewBody.innerHTML = text ? marked.parse(text) : '<p style="color: var(--text-secondary);">Start writing to see preview...</p>';
+
+            const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            wordCountEl.textContent = `${words} word${words !== 1 ? 's' : ''}`;
         });
 
-        // Tab key inserts spaces instead of changing focus
-        contentInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const start = contentInput.selectionStart;
-                const end = contentInput.selectionEnd;
-                contentInput.value = contentInput.value.substring(0, start) + '    ' + contentInput.value.substring(end);
-                contentInput.selectionStart = contentInput.selectionEnd = start + 4;
-                updatePreview();
-            }
-        });
-
-        // ───── Submit form to backend ─────
-        document.getElementById('editor-form').addEventListener('submit', async (e) => {
+        document.getElementById('write-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const statusDiv = document.getElementById('status-message');
-            statusDiv.innerHTML = '<span class="status-badge status-loading">⏳ Publishing transmission...</span>';
-
-            // Convert markdown to HTML before sending
-            let finalContent = contentInput.value;
-            if (contentMode === 'markdown') {
-                finalContent = marked.parse(finalContent);
-            }
-
-            const postData = {
-                title: titleInput.value,
-                slug: slugInput.value,
-                content: finalContent
-            };
+            const btn = document.getElementById('btn-publish-post');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Publishing...';
+            btn.disabled = true;
 
             try {
-                // Post to the local manage_blog.py script
                 const response = await fetch('/api/posts', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Auth-Token': secretCode
-                    },
-                    body: JSON.stringify(postData),
+                    headers: { 'Content-Type': 'application/json', 'X-Auth-Token': secretCode },
+                    body: JSON.stringify({
+                        title: titleInput.value,
+                        slug: slugInput.value,
+                        content: marked.parse(contentInput.value)
+                    }),
                 });
 
                 if (response.ok) {
-                    statusDiv.innerHTML = '<span class="status-badge status-success">✅ Transmission published to posts.json! You can now commit and push to GitHub.</span>';
-                    // Clear form
-                    titleInput.value = '';
-                    slugInput.value = '';
+                    showAlert('✅ Transmission published successfully!');
+                    document.getElementById('write-form').reset();
                     slugInput.dataset.manual = '';
-                    contentInput.value = '';
                     previewTitle.textContent = 'Post Title';
-                    previewBody.innerHTML = '<p style="color: var(--text-secondary);">Start writing to see a live preview...</p>';
-                    updateWordCount();
+                    previewBody.innerHTML = '<p style="color: var(--text-secondary);">Start writing to see preview...</p>';
+                    wordCountEl.textContent = '0 words';
+                    loadManagePosts(); // Refresh the archive tab
                 } else {
-                    const errorData = await response.json().catch(() => ({}));
-                    statusDiv.innerHTML = `<span class="status-badge status-error">❌ Failed: ${errorData.detail || 'Check if a post with this slug already exists.'}</span>`;
+                    const err = await response.json().catch(() => ({}));
+                    showAlert(`❌ Publish failed: ${err.detail || 'Generic error'}`, true);
                 }
-            } catch (error) {
-                statusDiv.innerHTML = '<span class="status-badge status-error">❌ Could not connect. Make sure you are running `python manage_blog.py`.</span>';
+            } catch (err) {
+                showAlert('❌ Connection error. Is the server running?', true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         });
+
+        // ───── Manage Posts Logic ─────
+        document.getElementById('btn-refresh-posts').addEventListener('click', loadManagePosts);
+
+        async function loadManagePosts() {
+            const container = document.getElementById('manage-posts-container');
+            container.innerHTML = '<div style="color: var(--text-secondary);">Fetching archives...</div>';
+
+            try {
+                // Fetch directly from the data file being served by python
+                const res = await fetch('data/posts.json?t=' + Date.now());
+                if (!res.ok) throw new Error('File not found');
+                const posts = await res.json();
+
+                if (posts.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-secondary);">No posts found.</div>';
+                    return;
+                }
+
+                container.innerHTML = posts.map(post => `
+                    <div class="post-manage-item">
+                        <div>
+                            <div class="post-manage-title">${post.title}</div>
+                            <div class="post-manage-date">${new Date(post.created_at).toLocaleDateString()} • /${post.url_slug}</div>
+                        </div>
+                        <button class="btn btn-small btn-danger delete-post-btn" data-slug="${post.url_slug}">🗑️ Delete</button>
+                    </div>
+                `).join('');
+
+                // Attach delete listeners
+                document.querySelectorAll('.delete-post-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => deletePost(e.target.dataset.slug));
+                });
+            } catch (e) {
+                container.innerHTML = '<div class="alert alert-error" style="display:block;">Error loading posts. Ensure posts.json exists.</div>';
+            }
+        }
+
+        async function deletePost(slug) {
+            if (!confirm(`Are you sure you want to delete the post '${slug}'? This cannot be undone.`)) return;
+
+            try {
+                const res = await fetch(`/api/posts?slug=${slug}`, {
+                    method: 'DELETE',
+                    headers: { 'X-Auth-Token': secretCode }
+                });
+
+                if (res.ok) {
+                    showAlert(`✅ Post '${slug}' deleted.`);
+                    loadManagePosts(); // Refresh list
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    showAlert(`❌ Delete failed: ${err.detail || 'Unknown'}`, true);
+                }
+            } catch (e) {
+                showAlert('❌ Connection error.', true);
+            }
+        }
+
+        // ───── About Page Logic ─────
+        const aboutContent = document.getElementById('about-content');
+        const aboutPreview = document.getElementById('about-preview-body');
+
+        aboutContent.addEventListener('input', () => {
+            aboutPreview.innerHTML = aboutContent.value ? marked.parse(aboutContent.value) : '<p style="color: var(--text-secondary);">Write something...</p>';
+        });
+
+        async function loadAboutContent() {
+            try {
+                const res = await fetch('/api/about', { headers: { 'X-Auth-Token': secretCode } });
+                if (res.ok) {
+                    const data = await res.json();
+                    aboutContent.value = data.markdown || '';
+                    aboutPreview.innerHTML = data.markdown ? marked.parse(data.markdown) : '<p style="color: var(--text-secondary);">Empty bio.</p>';
+                } else {
+                    aboutContent.value = '';
+                    aboutPreview.innerHTML = '<p style="color: var(--text-secondary);">No about.json file found yet. Write and save to create one.</p>';
+                }
+            } catch (e) {
+                console.error('Failed to load about content', e);
+            }
+        }
+
+        document.getElementById('about-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-about');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Saving...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/about', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Auth-Token': secretCode },
+                    body: JSON.stringify({ markdown: aboutContent.value })
+                });
+
+                if (res.ok) {
+                    showAlert('✅ Biography saved securely!');
+                } else {
+                    showAlert('❌ Failed to save biography.', true);
+                }
+            } catch (e) {
+                showAlert('❌ Connection error.', true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // ───── Universal Markdown Toolbar Helper ─────
+        function applyToolbarAction(textarea, action) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selected = textarea.value.substring(start, end);
+            let insertion = '', cursorOffset = 0;
+
+            switch (action) {
+                case 'bold': insertion = `**${selected || 'bold'}**`; cursorOffset = selected ? insertion.length : 2; break;
+                case 'italic': insertion = `*${selected || 'italic'}*`; cursorOffset = selected ? insertion.length : 1; break;
+                case 'h2': insertion = `\n## ${selected || 'Heading'}`; cursorOffset = insertion.length; break;
+                case 'h3': insertion = `\n### ${selected || 'Heading'}`; cursorOffset = insertion.length; break;
+                case 'ul': insertion = `\n- ${selected || 'item'}`; cursorOffset = insertion.length; break;
+                case 'ol': insertion = `\n1. ${selected || 'item'}`; cursorOffset = insertion.length; break;
+                case 'blockquote': insertion = `\n> ${selected || 'Quote'}`; cursorOffset = insertion.length; break;
+                case 'link': insertion = `[${selected || 'text'}](https://)`; cursorOffset = selected ? insertion.length - 1 : 7; break;
+                case 'image': insertion = `![${selected || 'alt'}](https://)`; cursorOffset = selected ? insertion.length - 1 : 7; break;
+                case 'code': insertion = `\`${selected || 'code'}\``; cursorOffset = selected ? insertion.length : 1; break;
+            }
+
+            textarea.value = textarea.value.substring(0, start) + insertion + textarea.value.substring(end);
+            textarea.focus();
+            textarea.setSelectionRange(start + cursorOffset, start + cursorOffset);
+            textarea.dispatchEvent(new Event('input')); // Trigger preview update
+        }
+
+        document.querySelectorAll('#toolbar-write .toolbar-btn').forEach(btn => {
+            btn.addEventListener('click', () => applyToolbarAction(contentInput, btn.dataset.action));
+        });
+        document.querySelectorAll('#toolbar-about .toolbar-btn').forEach(btn => {
+            btn.addEventListener('click', () => applyToolbarAction(aboutContent, btn.dataset.action));
+        });
+
     </script>
 </body>
 
